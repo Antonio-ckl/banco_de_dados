@@ -232,11 +232,11 @@ select nome, count(clientes.id) from clientes inner join pedidos on clientes.id 
 
 -- 5. Liste todos os pedidos e seus respectivos clientes, incluindo pedidos feitos por clientes que foram excluídos da tabela clientes
 
-select clientes.nome,pedidos.id from pedidos right join clientes on clientes.id = pedidos.cliente_id group by nome;
+select clientes.nome,pedidos.id from pedidos right join clientes on clientes.id = pedidos.cliente_id;
 
 -- 6. Qual o valor total de todos os pedidos feitos até agora?
 
-select sum(valor) as 'Valor Total' from itens_pedido;
+select sum(valor) as valor_total_pedidos from itens_pedido;
 
 -- 7. Qual o total gasto por cada cliente?
 
@@ -267,7 +267,7 @@ select min(valor) as pedido_mais_barato from pedidos;
  
  -- 14. Qual o pedido mais caro, exibir o nome do cliente e o valor do pedido.
  
- select  clientes.id, clientes.nome, max(valor) from pedidos inner join clientes on  clientes.id = pedidos.cliente_id group by nome;
+ select nome, valor from pedidos inner join clientes on  clientes.id = pedidos.cliente_id order by valor desc limit 1;
  
  -- 15. Qual a média de pizzas por pedido e quantos pedidos foram feitos?
  
@@ -283,6 +283,22 @@ select clientes.nome, pedidos.id, max(valor) as maior_valor, min(valor) as menor
 
 -- 18. Quantas pizzas cada cliente comprou no total?
 
-select sum(quantidade) as total_pizzas,count(pedidos.id) as total_pedido from clientes inner join pedidos on clientes.id = pedidos.cliente_id group by nome;
+select clientes.nome, sum(quantidade) as total_pizzas from itens_pedido inner join pedidos on itens_pedido.pedido_id=pedidos.id inner join clientes on cliente_id=clientes.id  group by nome;
 select * from clientes;
 select * from pedidos; 
+
+-- 19. Qual o pedido mais barato, exibir o nome do cliente e o valor do pedido.
+
+ select nome, valor from pedidos inner join clientes on  clientes.id = pedidos.cliente_id order by valor limit 1;
+
+-- 20. Liste todos os clientes, mesmo que não tenham feito pedidos, com seus respectivos pedidos (se houver).
+
+select nome, pedidos.id as pedidos, data, valor from clientes left join pedidos on pedidos.cliente_id=clientes.id;
+
+-- 21. Liste todos os clientes com o valor total de seus pedidos (mesmo que não tenham feito pedidos).
+
+select nome, sum(valor) as valor_total from clientes left join pedidos on  pedidos.cliente_id=clientes.id group by nome;
+
+-- 22. Liste os 3 clientes que mais gastou, exibir nome do cliente e o valor gasto.
+
+select nome, sum(valor) as valor_total from clientes inner join pedidos on  pedidos.cliente_id=clientes.id group by nome order by valor_total desc limit 3;
